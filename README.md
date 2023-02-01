@@ -1,4 +1,6 @@
-# Submission
+# Introduction
+
+This is a basic fullstack web application template involving frontend, backend and devops stuff.
 
 ## Design choices
 
