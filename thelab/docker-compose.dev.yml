@@ -1,0 +1,50 @@
+version: "3"
+
+services:
+  thelab_backend:
+    container_name: thelab_backend    
+    build: ./thelab_backend
+    command: /start_dev.sh
+    volumes:
+      - ./:/code
+      - django-static:/static
+    environment:
+      - "DJANGO_SECRET_KEY=9SR3Wp2DTexxFh5Ajb1LUnQMeSi1EpruzFNEgNBBi6Xkm0ONkN0"
+      - "DJANGO_DEBUG=True"
+    networks:
+      - django-nginx
+
+  thelab_frontend:
+    container_name: thelab_frontend
+    build:
+      context: ./thelab_frontend
+    volumes:
+      - ./thelab_frontend:/app/:ro
+      - /app/node_modules
+    ports:
+      - "8080:8080"
+    depends_on:
+      - thelab_backend
+    networks:
+      - django-nginx
+    environment:
+      - NODE_ENV=development
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    ports:
+      - "8000:80"
+    depends_on:
+      - thelab_backend
+    volumes:
+      - ./nginx/dev.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - django-nginx
+
+volumes:
+  django-static:
+
+networks:
+  django-nginx:
+    driver: bridge

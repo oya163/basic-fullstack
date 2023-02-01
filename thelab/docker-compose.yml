@@ -1,0 +1,35 @@
+version: "3"
+
+services:
+  thelab_backend:
+    build:
+      context: ./thelab_backend
+    command: /start_prod.sh
+    environment:
+      - "DJANGO_SECRET_KEY=9SR3Wp2DTexxFh5Ajb1LUnQMeSi1EpruzFNEgNBBi6Xkm0ONkN0"
+      - "DJANGO_DEBUG=False"
+    networks:
+      - django-nginx
+    volumes:
+      - ./:/code
+      - django-static:/static
+
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    ports:
+      - 8000:80
+    networks:
+      - django-nginx
+    volumes:
+      - ./nginx/prod.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - thelab_backend
+
+volumes:
+  django-static:
+
+networks:
+  django-nginx:
+    driver: bridge
